@@ -42,11 +42,14 @@ public class WsHandler implements WebSocketHandler {
         try {
             MessageDTO dto = objectMapper.readValue((String) message.getPayload(), MessageDTO.class);
 
-            if (dto.getType().equals(TypeEnum.SEND_TO_ALL)){
-                messageService.broadcast(session, connectedSessions, dto.getContent());
-            } else {
-                session.sendMessage(new TextMessage(dto.getContent()));
-            }
+            messageService.broadcast(session, connectedSessions, dto.getContent());
+
+//            TODO: Corrigir quando adicionar Redis Cache (Armazenar sessão do usuário, mensagens e etc)
+//            if (dto.getType().equals(TypeEnum.SEND_TO_ALL)){
+//                messageService.broadcast(session, connectedSessions, dto.getContent());
+//            } else {
+//                session.sendMessage(new TextMessage(dto.getContent()));
+//            }
 
         } catch (Exception e) {
             throw new RuntimeException("Ocorreu um erro no processamento de mensagens.", e);
