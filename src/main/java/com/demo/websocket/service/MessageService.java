@@ -21,7 +21,9 @@ public class MessageService {
                 f.sendMessage(new TextMessage(payload));
             } catch (IOException e) {
                 logger.error("Ocorreu um erro ao realizar um broadcast para a sessão {}: ", session.getId(), e);
-                connectedSessions.remove(session.getId()); // remove sessão problemática
+
+                String userId = (String) session.getAttributes().get("userId");
+                connectedSessions.remove(userId); // remove sessão problemática
             }
         });
     }

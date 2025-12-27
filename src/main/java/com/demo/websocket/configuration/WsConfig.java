@@ -11,12 +11,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WsConfig implements WebSocketConfigurer {
     private final WsHandler wsHandler;
 
-    public WsConfig(WsHandler wsHandler) {
+    private final AuthHandshakeInterceptor authHandshakeInterceptor;
+
+    public WsConfig(WsHandler wsHandler, AuthHandshakeInterceptor authHandshakeInterceptor) {
         this.wsHandler = wsHandler;
+        this.authHandshakeInterceptor = authHandshakeInterceptor;
     }
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(wsHandler, "/ws")
+                .addInterceptors(authHandshakeInterceptor)
                 .setAllowedOrigins("*");;
     }
 }
