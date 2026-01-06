@@ -5,6 +5,7 @@ import com.demo.websocket.model.enums.TypeEnum;
 public class MessageDTO {
     public TypeEnum type;
     public String content;
+    public String to;
 
     public TypeEnum getType() {
         return type;
@@ -20,5 +21,13 @@ public class MessageDTO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
     }
 }

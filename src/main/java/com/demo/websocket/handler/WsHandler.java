@@ -30,7 +30,8 @@ public class WsHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         try {
-            connectedSessions.putIfAbsent(session.getId(), session);
+            String userId = (String) session.getAttributes().get("userId");
+            connectedSessions.putIfAbsent(userId, session);
             logger.debug("Sessão iniciada {}", session);
         } catch(Exception e) {
             throw new Exception("Ocorreu um erro na tentativa de conexão.", e);
@@ -42,14 +43,12 @@ public class WsHandler implements WebSocketHandler {
         try {
             MessageDTO dto = objectMapper.readValue((String) message.getPayload(), MessageDTO.class);
 
-            messageService.broadcast(session, connectedSessions, dto.getContent());
-
-//            TODO: Corrigir quando adicionar Redis Cache (Armazenar sessão do usuário, mensagens e etc)
-//            if (dto.getType().equals(TypeEnum.SEND_TO_ALL)){
-//                messageService.broadcast(session, connectedSessions, dto.getContent());
-//            } else {
-//                session.sendMessage(new TextMessage(dto.getContent()));
-//            }
+            if (dto.getType().equals(TypeEnum.SEND_TO_ALL)){
+                messageService.broadcast(session, connectedSessions, dto.getContent());
+            } else {
+                WebSocketSession sessionReceiver = connectedSessions.get(dto.getTo());
+                sessionReceiver.sendMessage(new TextMessage(dto.getContent()));
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("Ocorreu um erro no processamento de mensagens.", e);
@@ -64,7 +63,8 @@ public class WsHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         try {
-            connectedSessions.remove(session.getId());
+            String userId = (String) session.getAttributes().get("userId");
+            connectedSessions.remove(userId);
         } catch (Exception e) {
             throw new RuntimeException("Ocorreu um erro ao tentar fechar a conexão.", e);
         }
