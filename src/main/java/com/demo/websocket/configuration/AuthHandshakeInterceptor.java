@@ -24,9 +24,9 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
         URI uri = request.getURI();
         String query = uri.getQuery();
 
-        if (query != null && query.contains("userId=")) {
-            String userId = query.split("userId=")[1];// mudar pra token jwt futuramente
-            attributes.put("userId", userId);
+        if (query != null && query.contains("token=")) {
+            String token = query.split("token=")[1];// mudar pra token jwt futuramente
+            attributes.put("token", token);
             return true;
         }
 
